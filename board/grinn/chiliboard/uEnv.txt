@@ -1,0 +1,3 @@
+ip_method=none
+uenvcmd=mmc rescan; run loadimage; run findfdt; run loadfdt; run mmcargs; bootz ${loadaddr} - ${fdtaddr}
+
