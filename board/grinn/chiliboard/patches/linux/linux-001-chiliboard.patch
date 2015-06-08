@@ -1,7 +1,7 @@
 diff -rupN orig/arch/arm/boot/dts/am335x-chiliboard-all-gpio.dtsi mod/arch/arm/boot/dts/am335x-chiliboard-all-gpio.dtsi
 --- orig/arch/arm/boot/dts/am335x-chiliboard-all-gpio.dtsi	1970-01-01 01:00:00.000000000 +0100
-+++ mod/arch/arm/boot/dts/am335x-chiliboard-all-gpio.dtsi	2015-03-20 01:42:03.511587828 +0100
-@@ -0,0 +1,92 @@
++++ mod/arch/arm/boot/dts/am335x-chiliboard-all-gpio.dtsi	2015-04-21 21:42:12.216494857 +0200
+@@ -0,0 +1,91 @@
 +/*
 + * Copyright (C) 2015 Grinn - http://www.grinn-global.com
 + * Grzegorz Glomb <g.glomb@grinn-global.com> 
@@ -25,7 +25,6 @@ diff -rupN orig/arch/arm/boot/dts/am335x-chiliboard-all-gpio.dtsi mod/arch/arm/b
 +			0x1a0 (PIN_INPUT | MUX_MODE7) /* "mcasp0_aclkr.gpio3_18" */
 +			0x19c (PIN_INPUT | MUX_MODE7) /* "mcasp0_ahclkr.gpio3_17" */
 +			0x1a8 (PIN_INPUT | MUX_MODE7) /* "mcasp0_axr1.gpio3_20" */
-+			0x1a4 (PIN_INPUT | MUX_MODE7) /* "mcasp0_fsr.gpio3_19" */
 +			0x150 (PIN_INPUT | MUX_MODE7) /* "spi0_sclk.gpio0_2" */
 +			0x15c (PIN_INPUT | MUX_MODE7) /* "spi0_cs0.gpio0_5" */
 +			0x158 (PIN_INPUT | MUX_MODE7) /* "spi0_d1.gpio0_4" */
@@ -94,9 +93,71 @@ diff -rupN orig/arch/arm/boot/dts/am335x-chiliboard-all-gpio.dtsi mod/arch/arm/b
 +		>;
 +	};
 +};
+diff -rupN orig/arch/arm/boot/dts/am335x-chiliboard-all-gpio-lcd.dtsi mod/arch/arm/boot/dts/am335x-chiliboard-all-gpio-lcd.dtsi
+--- orig/arch/arm/boot/dts/am335x-chiliboard-all-gpio-lcd.dtsi	1970-01-01 01:00:00.000000000 +0100
++++ mod/arch/arm/boot/dts/am335x-chiliboard-all-gpio-lcd.dtsi	2015-04-21 21:36:46.524484781 +0200
+@@ -0,0 +1,58 @@
++/*
++ * Copyright (C) 2015 Grinn - http://www.grinn-global.com
++ * Grzegorz Glomb <g.glomb@grinn-global.com> 
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ */
++
++&am33xx_pinmux {
++	pinctrl-names = "default";
++	pinctrl-0 = <&unused_pins>;
++
++	unused_pins: unused_pins {
++		pinctrl-single,pins = <
++			0x1a4 (PIN_INPUT | MUX_MODE7) /* "mcasp0_fsr.gpio3_19" */
++			0x1a0 (PIN_INPUT | MUX_MODE7) /* "mcasp0_aclkr.gpio3_18" */
++			0x19c (PIN_INPUT | MUX_MODE7) /* "mcasp0_ahclkr.gpio3_17" */
++			0x150 (PIN_INPUT | MUX_MODE7) /* "spi0_sclk.gpio0_2" */
++			0x15c (PIN_INPUT | MUX_MODE7) /* "spi0_cs0.gpio0_5" */
++			0x158 (PIN_INPUT | MUX_MODE7) /* "spi0_d1.gpio0_4" */
++			0x154 (PIN_INPUT | MUX_MODE7) /* "spi0_d0.gpio0_3" */
++			0x164 (PIN_INPUT | MUX_MODE7) /* "ecap0_in_pwm0_out.gpio0_7" */
++			0x17c (PIN_INPUT | MUX_MODE7) /* "uart1_rtsn.gpio0_13" */
++			0x178 (PIN_INPUT | MUX_MODE7) /* "uart1_ctsn.gpio0_12" */
++			0x184 (PIN_INPUT | MUX_MODE7) /* "uart1_txd.gpio0_15" */
++			0x180 (PIN_INPUT | MUX_MODE7) /* "uart1_rxd.gpio0_14" */
++			0x16c (PIN_INPUT | MUX_MODE7) /* "uart0_rtsn.gpio1_9" */
++			0x168 (PIN_INPUT | MUX_MODE7) /* "uart0_ctsn.gpio1_8" */
++			0x108 (PIN_INPUT | MUX_MODE7) /* "mii1_col.gpio3_0" */
++			0x118 (PIN_INPUT | MUX_MODE7) /* "mii1_rxdv.gpio3_4" */
++			0x11c (PIN_INPUT | MUX_MODE7) /* "mii1_txd3.gpio0_16" */
++			0x120 (PIN_INPUT | MUX_MODE7) /* "mii1_txd2.gpio0_17" */
++			0x12c (PIN_INPUT | MUX_MODE7) /* "mii1_txclk.gpio3_9" */
++			0x134 (PIN_INPUT | MUX_MODE7) /* "mii1_rxd3.gpio2_18" */
++			0x138 (PIN_INPUT | MUX_MODE7) /* "mii1_rxd2.gpio2_19" */
++			0x130 (PIN_INPUT | MUX_MODE7) /* "mii1_rxclk.gpio3_10" */
++			0x084 (PIN_INPUT | MUX_MODE7) /* "gpmc_csn2.gpio1_31" */
++			0x088 (PIN_INPUT | MUX_MODE7) /* "gpmc_csn3.gpio2_0" */
++			0x080 (PIN_INPUT | MUX_MODE7) /* "gpmc_csn1.gpio1_30" */
++			0x078 (PIN_INPUT | MUX_MODE7) /* "gpmc_ben1.gpio1_28" */
++			0x074 (PIN_INPUT | MUX_MODE7) /* "gpmc_wpn.gpio0_31" */
++			0x068 (PIN_INPUT | MUX_MODE7) /* "gpmc_a10.gpio1_26" */
++			0x06c (PIN_INPUT | MUX_MODE7) /* "gpmc_a11.gpio1_27" */
++			0x060 (PIN_INPUT | MUX_MODE7) /* "gpmc_a8.gpio1_24" */
++			0x064 (PIN_INPUT | MUX_MODE7) /* "gpmc_a9.gpio1_25" */
++			0x058 (PIN_INPUT | MUX_MODE7) /* "gpmc_a6.gpio1_22" */
++			0x05c (PIN_INPUT | MUX_MODE7) /* "gpmc_a7.gpio1_23" */
++			0x050 (PIN_INPUT | MUX_MODE7) /* "gpmc_a4.gpio1_20" */
++			0x054 (PIN_INPUT | MUX_MODE7) /* "gpmc_a5.gpio1_21" */
++			0x048 (PIN_INPUT | MUX_MODE7) /* "gpmc_a2.gpio1_18" */
++			0x04c (PIN_INPUT | MUX_MODE7) /* "gpmc_a3.gpio1_19" */
++			0x040 (PIN_INPUT | MUX_MODE7) /* "gpmc_a0.gpio1_16" */
++			0x044 (PIN_INPUT | MUX_MODE7) /* "gpmc_a1.gpio1_17" */
++			0x08c (PIN_INPUT | MUX_MODE7) /* "gpmc_clk.gpio2_1" */
++		>;
++	};
++};
 diff -rupN orig/arch/arm/boot/dts/am335x-chiliboard-common.dtsi mod/arch/arm/boot/dts/am335x-chiliboard-common.dtsi
 --- orig/arch/arm/boot/dts/am335x-chiliboard-common.dtsi	1970-01-01 01:00:00.000000000 +0100
-+++ mod/arch/arm/boot/dts/am335x-chiliboard-common.dtsi	2015-03-20 22:04:07.910780501 +0100
++++ mod/arch/arm/boot/dts/am335x-chiliboard-common.dtsi	2015-03-20 22:04:07.000000000 +0100
 @@ -0,0 +1,161 @@
 +/*
 + * Copyright (C) 2015 Grinn - http://www.grinn-global.com
@@ -259,9 +320,192 @@ diff -rupN orig/arch/arm/boot/dts/am335x-chiliboard-common.dtsi mod/arch/arm/boo
 +	/* cd-inverted; */
 +};
 +
-diff -rupN orig/arch/arm/boot/dts/am335x-chiliboard-ram128m.dts mod/arch/arm/boot/dts/am335x-chiliboard-ram128m.dts
---- orig/arch/arm/boot/dts/am335x-chiliboard-ram128m.dts	1970-01-01 01:00:00.000000000 +0100
-+++ mod/arch/arm/boot/dts/am335x-chiliboard-ram128m.dts	2015-02-15 10:23:00.000000000 +0100
+diff -rupN orig/arch/arm/boot/dts/am335x-chiliboard-lcd-cape.dtsi mod/arch/arm/boot/dts/am335x-chiliboard-lcd-cape.dtsi
+--- orig/arch/arm/boot/dts/am335x-chiliboard-lcd-cape.dtsi	1970-01-01 01:00:00.000000000 +0100
++++ mod/arch/arm/boot/dts/am335x-chiliboard-lcd-cape.dtsi	2015-04-21 21:39:45.212490309 +0200
+@@ -0,0 +1,150 @@
++/*
++ * Copyright (C) 2015 Grinn - http://www.grinn-global.com
++ * Grzegorz Glomb <g.glomb@grinn-global.com> 
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ */
++
++/ {
++	panel {
++		compatible = "ti,tilcdc,panel";
++		status = "okay";
++		panel-info {
++			ac-bias           = <255>;
++			ac-bias-intrpt    = <0>;
++			dma-burst-sz      = <16>;
++			bpp               = <32>;
++			fdd               = <0x80>;
++			sync-edge         = <0>;
++			sync-ctrl         = <1>;
++			raster-order      = <0>;
++			fifo-th           = <0>;
++		};
++
++		display-timings {
++			/* YEEBO YB-YG800480S01A-T-A0 */
++			800x480p62 {
++				clock-frequency = <33300000>;
++				hactive = <800>;
++				vactive = <480>;
++				hfront-porch = <210>;
++				hback-porch = <46>;
++				hsync-len = <2>;
++				vback-porch = <23>;
++				vfront-porch = <22>;
++				vsync-len = <2>;
++				hsync-active = <1>;
++				vsync-active = <1>;
++			};
++		};
++	};
++};
++
++&am33xx_pinmux {
++	lcd_pins_default: lcd_pins_default {
++		pinctrl-single,pins = <
++			0x20 0x01	/* gpmc_ad8.lcd_data16, OUTPUT | MODE1 */
++			0x24 0x01	/* gpmc_ad9.lcd_data17, OUTPUT | MODE1 */
++			0x28 0x01	/* gpmc_ad10.lcd_data18, OUTPUT | MODE1 */
++			0x2c 0x01	/* gpmc_ad11.lcd_data19, OUTPUT | MODE1 */
++			0x30 0x01	/* gpmc_ad12.lcd_data20, OUTPUT | MODE1 */
++			0x34 0x01	/* gpmc_ad13.lcd_data21, OUTPUT | MODE1 */
++			0x38 0x01	/* gpmc_ad14.lcd_data22, OUTPUT | MODE1 */
++			0x3c 0x01	/* gpmc_ad15.lcd_data23, OUTPUT | MODE1 */
++			0xa0 0x00	/* lcd_data0.lcd_data0, OUTPUT | MODE0 */
++			0xa4 0x00	/* lcd_data1.lcd_data1, OUTPUT | MODE0 */
++			0xa8 0x00	/* lcd_data2.lcd_data2, OUTPUT | MODE0 */
++			0xac 0x00	/* lcd_data3.lcd_data3, OUTPUT | MODE0 */
++			0xb0 0x00	/* lcd_data4.lcd_data4, OUTPUT | MODE0 */
++			0xb4 0x00	/* lcd_data5.lcd_data5, OUTPUT | MODE0 */
++			0xb8 0x00	/* lcd_data6.lcd_data6, OUTPUT | MODE0 */
++			0xbc 0x00	/* lcd_data7.lcd_data7, OUTPUT | MODE0 */
++			0xc0 0x00	/* lcd_data8.lcd_data8, OUTPUT | MODE0 */
++			0xc4 0x00	/* lcd_data9.lcd_data9, OUTPUT | MODE0 */
++			0xc8 0x00	/* lcd_data10.lcd_data10, OUTPUT | MODE0 */
++			0xcc 0x00	/* lcd_data11.lcd_data11, OUTPUT | MODE0 */
++			0xd0 0x00	/* lcd_data12.lcd_data12, OUTPUT | MODE0 */
++			0xd4 0x00	/* lcd_data13.lcd_data13, OUTPUT | MODE0 */
++			0xd8 0x00	/* lcd_data14.lcd_data14, OUTPUT | MODE0 */
++			0xdc 0x00	/* lcd_data15.lcd_data15, OUTPUT | MODE0 */
++			0xe0 0x00	/* lcd_vsync.lcd_vsync, OUTPUT | MODE0 */
++			0xe4 0x00	/* lcd_hsync.lcd_hsync, OUTPUT | MODE0 */
++			0xe8 0x00	/* lcd_pclk.lcd_pclk, OUTPUT | MODE0 */
++			0xec 0x00	/* lcd_ac_bias_en.lcd_ac_bias_en, OUTPUT | MODE0 */
++		>;
++	};
++
++	lcd_pins_sleep: lcd_pins_sleep {
++		pinctrl-single,pins = <
++			0x20 (PIN_INPUT_PULLDOWN | MUX_MODE7)	/* gpmc_ad8.lcd_data16 */
++			0x24 (PIN_INPUT_PULLDOWN | MUX_MODE7)	/* gpmc_ad9.lcd_data17 */
++			0x28 (PIN_INPUT_PULLDOWN | MUX_MODE7)	/* gpmc_ad10.lcd_data18 */
++			0x2c (PIN_INPUT_PULLDOWN | MUX_MODE7)	/* gpmc_ad11.lcd_data19 */
++			0x30 (PIN_INPUT_PULLDOWN | MUX_MODE7)	/* gpmc_ad12.lcd_data20 */
++			0x34 (PIN_INPUT_PULLDOWN | MUX_MODE7)	/* gpmc_ad13.lcd_data21 */
++			0x38 (PIN_INPUT_PULLDOWN | MUX_MODE7)	/* gpmc_ad14.lcd_data22 */
++			0x3c (PIN_INPUT_PULLDOWN | MUX_MODE7)	/* gpmc_ad15.lcd_data23 */
++			0xa0 (PULL_DISABLE | MUX_MODE7)		/* lcd_data0.lcd_data0 */
++			0xa4 (PULL_DISABLE | MUX_MODE7)		/* lcd_data1.lcd_data1 */
++			0xa8 (PULL_DISABLE | MUX_MODE7)		/* lcd_data2.lcd_data2 */
++			0xac (PULL_DISABLE | MUX_MODE7)		/* lcd_data3.lcd_data3 */
++			0xb0 (PULL_DISABLE | MUX_MODE7)		/* lcd_data4.lcd_data4 */
++			0xb4 (PULL_DISABLE | MUX_MODE7)		/* lcd_data5.lcd_data5 */
++			0xb8 (PULL_DISABLE | MUX_MODE7)		/* lcd_data6.lcd_data6 */
++			0xbc (PULL_DISABLE | MUX_MODE7)		/* lcd_data7.lcd_data7 */
++			0xc0 (PULL_DISABLE | MUX_MODE7)		/* lcd_data8.lcd_data8 */
++			0xc4 (PULL_DISABLE | MUX_MODE7)		/* lcd_data9.lcd_data9 */
++			0xc8 (PULL_DISABLE | MUX_MODE7)		/* lcd_data10.lcd_data10 */
++			0xcc (PULL_DISABLE | MUX_MODE7)		/* lcd_data11.lcd_data11 */
++			0xd0 (PULL_DISABLE | MUX_MODE7)		/* lcd_data12.lcd_data12 */
++			0xd4 (PULL_DISABLE | MUX_MODE7)		/* lcd_data13.lcd_data13 */
++			0xd8 (PULL_DISABLE | MUX_MODE7)		/* lcd_data14.lcd_data14 */
++			0xdc (PULL_DISABLE | MUX_MODE7)		/* lcd_data15.lcd_data15 */
++			0xe0 (PIN_INPUT_PULLDOWN | MUX_MODE7)	/* lcd_vsync.lcd_vsync */
++			0xe4 (PIN_INPUT_PULLDOWN | MUX_MODE7)	/* lcd_hsync.lcd_hsync */
++			0xe8 (PIN_INPUT_PULLDOWN | MUX_MODE7)	/* lcd_pclk.lcd_pclk */
++			0xec (PIN_INPUT_PULLDOWN | MUX_MODE7)	/* lcd_ac_bias_en.lcd_ac_bias_en */
++		>;
++	};
++};
++
++&lcdc {
++	status = "okay";
++	pinctrl-names = "default", "sleep";
++	pinctrl-0 = <&lcd_pins_default>;
++	pinctrl-1 = <&lcd_pins_sleep>;
++};
++
++&tscadc {
++	status = "okay";
++	tsc {
++		ti,wires = <4>;
++		ti,x-plate-resistance = <200>;
++		ti,coordinate-readouts = <5>;
++		ti,wire-config = <0x00 0x11 0x22 0x33>;
++	};
++
++	adc {
++		ti,adc-channels = <4 5 6 7>;
++	};
++};
++
++&tps {
++	backlight {
++		fdim = <100>; /* 100Hz,200Hz,500Hz,1000Hz */
++		isel = <1>; /* 1 - ISET1, 2 - ISET 2 */
++		default-brightness = <50>;
++	};
++};
++
++&i2c0 {
++ 	mcpgpio: gpio@20 {
++		compatible = "microchip,mcp23008";
++		gpio-controller;
++		#gpio-cells = <2>;
++ 		reg = <0x20>;
++ 	};
++};
++
+diff -rupN orig/arch/arm/boot/dts/am335x-chiliboard-nand0-ram128.dts mod/arch/arm/boot/dts/am335x-chiliboard-nand0-ram128.dts
+--- orig/arch/arm/boot/dts/am335x-chiliboard-nand0-ram128.dts	1970-01-01 01:00:00.000000000 +0100
++++ mod/arch/arm/boot/dts/am335x-chiliboard-nand0-ram128.dts	2015-04-21 22:52:25.216625194 +0200
+@@ -0,0 +1,25 @@
++/*
++ * Copyright (C) 2015 Grinn - http://www.grinn-global.com
++ * Grzegorz Glomb <g.glomb@grinn-global.com> 
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ */
++
++/dts-v1/;
++
++#include "am33xx.dtsi"
++#include "am335x-chilisom-gcs2.dtsi"
++#include "am335x-chiliboard-common.dtsi"
++#include "am335x-chiliboard-all-gpio.dtsi"
++
++/ {
++	memory {
++		reg = <0x80000000 0x08000000>; /* 128 MB */
++	};
++};
++
++&gpmc {
++	status = "disabled";
++};
+diff -rupN orig/arch/arm/boot/dts/am335x-chiliboard-nand256-ram128.dts mod/arch/arm/boot/dts/am335x-chiliboard-nand256-ram128.dts
+--- orig/arch/arm/boot/dts/am335x-chiliboard-nand256-ram128.dts	1970-01-01 01:00:00.000000000 +0100
++++ mod/arch/arm/boot/dts/am335x-chiliboard-nand256-ram128.dts	2015-04-21 22:53:56.608628021 +0200
 @@ -0,0 +1,22 @@
 +/*
 + * Copyright (C) 2015 Grinn - http://www.grinn-global.com
@@ -285,10 +529,10 @@ diff -rupN orig/arch/arm/boot/dts/am335x-chiliboard-ram128m.dts mod/arch/arm/boo
 +	};
 +};
 +
-diff -rupN orig/arch/arm/boot/dts/am335x-chiliboard-ram256m.dts mod/arch/arm/boot/dts/am335x-chiliboard-ram256m.dts
---- orig/arch/arm/boot/dts/am335x-chiliboard-ram256m.dts	1970-01-01 01:00:00.000000000 +0100
-+++ mod/arch/arm/boot/dts/am335x-chiliboard-ram256m.dts	2015-02-15 10:23:38.000000000 +0100
-@@ -0,0 +1,17 @@
+diff -rupN orig/arch/arm/boot/dts/am335x-chiliboard-nand256-ram256.dts mod/arch/arm/boot/dts/am335x-chiliboard-nand256-ram256.dts
+--- orig/arch/arm/boot/dts/am335x-chiliboard-nand256-ram256.dts	1970-01-01 01:00:00.000000000 +0100
++++ mod/arch/arm/boot/dts/am335x-chiliboard-nand256-ram256.dts	2015-04-21 22:56:30.224632774 +0200
+@@ -0,0 +1,16 @@
 +/*
 + * Copyright (C) 2015 Grinn - http://www.grinn-global.com
 + * Grzegorz Glomb <g.glomb@grinn-global.com> 
@@ -305,10 +549,31 @@ diff -rupN orig/arch/arm/boot/dts/am335x-chiliboard-ram256m.dts mod/arch/arm/boo
 +#include "am335x-chiliboard-common.dtsi"
 +#include "am335x-chiliboard-all-gpio.dtsi"
 +
+diff -rupN orig/arch/arm/boot/dts/am335x-chiliboard-nand256-ram256-lcd.dts mod/arch/arm/boot/dts/am335x-chiliboard-nand256-ram256-lcd.dts
+--- orig/arch/arm/boot/dts/am335x-chiliboard-nand256-ram256-lcd.dts	1970-01-01 01:00:00.000000000 +0100
++++ mod/arch/arm/boot/dts/am335x-chiliboard-nand256-ram256-lcd.dts	2015-04-21 22:58:20.356636181 +0200
+@@ -0,0 +1,18 @@
++/*
++ * Copyright (C) 2015 Grinn - http://www.grinn-global.com
++ * Grzegorz Glomb <g.glomb@grinn-global.com> 
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ */
 +
-diff -rupN orig/arch/arm/boot/dts/am335x-chiliboard-ram512m-nand512m.dts mod/arch/arm/boot/dts/am335x-chiliboard-ram512m-nand512m.dts
---- orig/arch/arm/boot/dts/am335x-chiliboard-ram512m-nand512m.dts	1970-01-01 01:00:00.000000000 +0100
-+++ mod/arch/arm/boot/dts/am335x-chiliboard-ram512m-nand512m.dts	2015-02-15 10:24:23.000000000 +0100
++/dts-v1/;
++
++#include "am33xx.dtsi"
++#include "am335x-chilisom-gcs2.dtsi"
++#include "am335x-chiliboard-common.dtsi"
++#include "am335x-chiliboard-all-gpio-lcd.dtsi"
++#include "am335x-chiliboard-lcd-cape.dtsi"
++
++
+diff -rupN orig/arch/arm/boot/dts/am335x-chiliboard-nand512-ram512.dts mod/arch/arm/boot/dts/am335x-chiliboard-nand512-ram512.dts
+--- orig/arch/arm/boot/dts/am335x-chiliboard-nand512-ram512.dts	1970-01-01 01:00:00.000000000 +0100
++++ mod/arch/arm/boot/dts/am335x-chiliboard-nand512-ram512.dts	2015-04-21 23:00:44.828640650 +0200
 @@ -0,0 +1,70 @@
 +/*
 + * Copyright (C) 2015 Grinn - http://www.grinn-global.com
@@ -380,9 +645,84 @@ diff -rupN orig/arch/arm/boot/dts/am335x-chiliboard-ram512m-nand512m.dts mod/arc
 +	};
 +};
 +
+diff -rupN orig/arch/arm/boot/dts/am335x-chiliboard-nand512-ram512-lcd.dts mod/arch/arm/boot/dts/am335x-chiliboard-nand512-ram512-lcd.dts
+--- orig/arch/arm/boot/dts/am335x-chiliboard-nand512-ram512-lcd.dts	1970-01-01 01:00:00.000000000 +0100
++++ mod/arch/arm/boot/dts/am335x-chiliboard-nand512-ram512-lcd.dts	2015-04-21 23:02:10.196643291 +0200
+@@ -0,0 +1,71 @@
++/*
++ * Copyright (C) 2015 Grinn - http://www.grinn-global.com
++ * Grzegorz Glomb <g.glomb@grinn-global.com> 
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ */
++
++/dts-v1/;
++
++#include "am33xx.dtsi"
++#include "am335x-chilisom-gcs2.dtsi"
++#include "am335x-chiliboard-common.dtsi"
++#include "am335x-chiliboard-all-gpio-lcd.dtsi"
++#include "am335x-chiliboard-lcd-cape.dtsi"
++
++/ {
++	memory {
++		reg = <0x80000000 0x20000000>; /* 512 MB */
++	};
++};
++
++&gpmc {
++	/* NAND 512MB */
++	status = "okay";
++	ranges = <0 0 0x08000000 0x20000000>;	/* CS0: NAND */
++	nand@0,0 {
++		ti,nand-ecc-opt= "bch16";
++		ti,elm-id = <&elm>;
++		#address-cells = <1>;
++		#size-cells = <1>;
++		partition@0 {
++			label = "NAND.SPL";
++			reg = <0x00000000 0x00040000>;
++		};
++		partition@1 {
++			label = "NAND.SPL.backup1";
++			reg = <0x00040000 0x00040000>;
++		};
++		partition@2 {
++			label = "NAND.SPL.backup2";
++			reg = <0x00080000 0x00040000>;
++		};
++		partition@3 {
++			label = "NAND.SPL.backup3";
++			reg = <0x000C0000 0x00040000>;
++		};
++		partition@4 {
++			label = "NAND.u-boot";
++			reg = <0x00100000 0x00200000>;
++		};
++		partition@5 {
++			label = "NAND.u-boot-spl-os";
++			reg = <0x00300000 0x00040000>;
++		};
++		partition@6 {
++			label = "NAND.u-boot-env";
++			reg = <0x00340000 0x00040000>;
++		};
++		partition@7 {
++			label = "NAND.kernel";
++			reg = <0x00380000 0x00500000>;
++		};
++		partition@8 {
++			label = "NAND.file-system";
++			reg = <0x00880000 0x1F780000>;
++		};
++	};
++};
++
 diff -rupN orig/arch/arm/boot/dts/am335x-chilisom-gcs2.dtsi mod/arch/arm/boot/dts/am335x-chilisom-gcs2.dtsi
 --- orig/arch/arm/boot/dts/am335x-chilisom-gcs2.dtsi	1970-01-01 01:00:00.000000000 +0100
-+++ mod/arch/arm/boot/dts/am335x-chilisom-gcs2.dtsi	2015-03-20 22:05:16.166778485 +0100
++++ mod/arch/arm/boot/dts/am335x-chilisom-gcs2.dtsi	2015-03-29 21:39:39.000000000 +0200
 @@ -0,0 +1,279 @@
 +/*
 + * Copyright (C) 2015 Grinn - http://www.grinn-global.com
@@ -665,7 +1005,7 @@ diff -rupN orig/arch/arm/boot/dts/am335x-chilisom-gcs2.dtsi mod/arch/arm/boot/dt
 +};
 diff -rupN orig/Documentation/devicetree/bindings/vendor-prefixes.txt mod/Documentation/devicetree/bindings/vendor-prefixes.txt
 --- orig/Documentation/devicetree/bindings/vendor-prefixes.txt	2015-03-12 16:31:21.000000000 +0100
-+++ mod/Documentation/devicetree/bindings/vendor-prefixes.txt	2015-03-19 06:39:25.967386764 +0100
++++ mod/Documentation/devicetree/bindings/vendor-prefixes.txt	2015-03-19 06:39:25.000000000 +0100
 @@ -38,6 +38,7 @@ fsl	Freescale Semiconductor
  GEFanuc	GE Fanuc Intelligent Platforms Embedded Systems, Inc.
  gef	GE Fanuc Intelligent Platforms Embedded Systems, Inc.
