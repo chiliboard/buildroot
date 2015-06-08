@@ -10,3 +10,5 @@ install -m 0644 -D board/grinn/chiliboard/firmware/am335x-pm-firmware.elf ${TARG
 install -m 0644 -D board/grinn/chiliboard/firmware/am335x-bone-scale-data.bin ${TARGET_DIR}/lib/firmware/am335x-bone-scale-data.bin
 
 install -m 0644 -D board/grinn/chiliboard/70-power-switch.rules ${TARGET_DIR}/lib/udev/rules.d/70-power-switch.rules
+
+install -m 0775 -D board/grinn/chiliboard/ti-gfx ${TARGET_DIR}/usr/sbin/ti-gfx
