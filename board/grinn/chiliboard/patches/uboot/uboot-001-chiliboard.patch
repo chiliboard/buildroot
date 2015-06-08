@@ -730,13 +730,15 @@ diff -rupN orig/board/grinn/chiliboard/u-boot.lds mod/board/grinn/chiliboard/u-b
 +}
 diff -rupN orig/boards.cfg mod/boards.cfg
 --- orig/boards.cfg	2014-07-14 19:16:45.000000000 +0200
-+++ mod/boards.cfg	2015-02-15 14:00:18.000000000 +0100
-@@ -258,6 +258,9 @@ Active  arm         armv7          am33x
++++ mod/boards.cfg	2015-04-21 21:23:22.604459911 +0200
+@@ -258,6 +258,11 @@ Active  arm         armv7          am33x
  Active  arm         armv7          am33xx      BuR             tseries             tseries_nand                          tseries:SERIAL1,CONS_INDEX=1,NAND                                                                                                 Hannes Petermaier <hannes.petermaier@br-automation.com>
  Active  arm         armv7          am33xx      BuR             tseries             tseries_spi                           tseries:SERIAL1,CONS_INDEX=1,SPI_BOOT,EMMC_BOOT                                                                                   Hannes Petermaier <hannes.petermaier@br-automation.com>
  Active  arm         armv7          am33xx      compulab        cm_t335             cm_t335                               -                                                                                                                                 Igor Grinberg <grinberg@compulab.co.il>
 +Active  arm         armv7          am33xx      grinn           chiliboard          chiliboard_ram128m                    chiliboard:CHILISOM_GCS2,NAND,RAM128MB                                                                                            Grzegorz Glomb <g.glomb@grinn-global.com>
++Active  arm         armv7          am33xx      grinn           chiliboard          chiliboard_nand0m_ram128m             chiliboard:CHILISOM_GCS2,RAM128MB                                                                                                 Grzegorz Glomb <g.glomb@grinn-global.com>
 +Active  arm         armv7          am33xx      grinn           chiliboard          chiliboard_nand512m                   chiliboard:CHILISOM_GCS2,NAND,NAND512MB                                                                                           Grzegorz Glomb <g.glomb@grinn-global.com>
++Active  arm         armv7          am33xx      grinn           chiliboard          chiliboard_nand0m                     chiliboard:CHILISOM_GCS2                                                                                                          Grzegorz Glomb <g.glomb@grinn-global.com>
 +Active  arm         armv7          am33xx      grinn           chiliboard          chiliboard                            chiliboard:CHILISOM_GCS2,NAND                                                                                                     Grzegorz Glomb <g.glomb@grinn-global.com>
  Active  arm         armv7          am33xx      gumstix         pepper              pepper                                -                                                                                                                                 Ash Charles <ash@gumstix.com>
  Active  arm         armv7          am33xx      isee            igep0033            am335x_igep0033                       -                                                                                                                                 Enric Balletbo i Serra <eballetbo@iseebcn.com>
@@ -762,7 +764,7 @@ diff -rupN orig/drivers/mtd/nand/omap_gpmc.c mod/drivers/mtd/nand/omap_gpmc.c
  		chip->ecc.calculate(mtd, p, &ecc_calc[i]);
 diff -rupN orig/include/configs/chiliboard.h mod/include/configs/chiliboard.h
 --- orig/include/configs/chiliboard.h	1970-01-01 01:00:00.000000000 +0100
-+++ mod/include/configs/chiliboard.h	2015-02-14 00:15:29.000000000 +0100
++++ mod/include/configs/chiliboard.h	2015-04-21 20:06:26.456317102 +0200
 @@ -0,0 +1,878 @@
 +/*
 + * chiliboard.h
@@ -1217,7 +1219,7 @@ diff -rupN orig/include/configs/chiliboard.h mod/include/configs/chiliboard.h
 +		"name=rootfs,start=2MiB,size=-,uuid=${uuid_gpt_rootfs}\0" \
 +	"optargs=\0" \
 +	"mmcdev=0\0" \
-+	"mmcroot=/dev/mmcblk0p2 ro\0" \
++	"mmcroot=/dev/mmcblk0p2 rw\0" \
 +	"mmcrootfstype=ext4 rootwait\0" \
 +	"rootpath=/export/rootfs\0" \
 +	"nfsopts=nolock\0" \
@@ -1299,7 +1301,7 @@ diff -rupN orig/include/configs/chiliboard.h mod/include/configs/chiliboard.h
 +		"run ramargs; " \
 +		"bootz ${loadaddr} ${rdaddr} ${fdtaddr}\0" \
 +	"findfdt="\
-+		"setenv fdtfile am335x-chiliboard.dtb; fi; \0" \
++		"setenv fdtfile am335x-chiliboard.dtb;\0" \
 +	NANDARGS \
 +	DFUARGS
 +#endif
