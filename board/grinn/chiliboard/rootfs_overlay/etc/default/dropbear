@@ -1,0 +1,3 @@
+# -B              Allow blank password logins
+# -b 		  banner file
+DROPBEAR_ARGS="-B -b /etc/issue"
