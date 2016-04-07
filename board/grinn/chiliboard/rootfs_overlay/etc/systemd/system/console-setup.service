@@ -1,0 +1,13 @@
+[Unit]
+Description=Disable console blanking
+ConditionPathExists=/dev/fb0
+After=sysinit.target
+
+[Service]
+Type=oneshot
+ExecStart=-/bin/echo 100 > /sys/class/backlight/tps65217-bl/brightness
+ExecStart=-/bin/echo 0 > /sys/module/kernel/parameters/consoleblank
+ExecStart=-/bin/echo 0 > /sys/module/vt/parameters/global_cursor_default
+
+[Install]
+WantedBy=basic.target

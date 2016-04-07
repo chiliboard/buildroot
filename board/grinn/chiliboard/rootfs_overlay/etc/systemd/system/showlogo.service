@@ -1,0 +1,15 @@
+[Unit]
+Description=Show FB logo
+
+ConditionPathExists=/dev/fb0
+
+After=sysinit.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=Yes
+ExecStart=-/usr/bin/env fbv -c -i /etc/logo800x480.png
+ExecStop=-/bin/dd if=/dev/zero of=/dev/fb0 bs=128k count=12
+
+[Install]
+WantedBy=basic.target

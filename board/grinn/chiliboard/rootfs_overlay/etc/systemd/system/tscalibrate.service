@@ -1,0 +1,34 @@
+[Unit]
+Description=Touchscreen calibration
+ConditionPathExists=!/etc/pointercal
+
+# After udev 
+After=sysinit.target
+
+# After brightness settings and other configuration stuff
+After=basic.target
+After=showlogo.service
+
+# Before starting user-apps
+Before=multi-user.target
+
+
+Wants=dev-input-lcd_sandwich_touchscreen.device
+After=dev-input-lcd_sandwich_touchscreen.device
+PartOf=dev-input-lcd_sandwich_touchscreen.device
+
+[Service]
+Type=oneshot
+ExecStart=-/usr/bin/setbrightness 100
+ExecStart=-/bin/sh -a -c '. /etc/profile && exec /usr/bin/env ts_calibrate'
+ExecStart=-/usr/bin/setbrightness 80
+ExecStart=-/bin/dd if=/dev/zero of=/dev/fb0 bs=128k count=12
+ExecStart=-/bin/systemctl --no-block restart showlogo.service
+
+ExecStop=-/bin/killall -9 ts_calibrate
+
+StandardOutput=journal+console
+
+
+[Install]
+WantedBy=dev-input-lcd_sandwich_touchscreen.device

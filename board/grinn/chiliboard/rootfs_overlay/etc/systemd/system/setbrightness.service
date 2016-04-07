@@ -1,0 +1,14 @@
+[Unit]
+Description=Set defautlt brightness
+ConditionPathExists=/dev/fb0
+After=sysinit.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/bin/sh -c '/bin/echo mmc0 > /sys/class/leds/led1/trigger'
+ExecStart=/usr/bin/setbrightness 80
+ExecStop=/usr/bin/setbrightness 20
+
+[Install]
+WantedBy=basic.target

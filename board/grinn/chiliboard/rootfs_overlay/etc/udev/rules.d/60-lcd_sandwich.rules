@@ -1,0 +1,25 @@
+# Try to enable lcd_en pin.
+SUBSYSTEM=="gpio", KERNEL=="gpiochip504", ACTION=="add", PROGRAM="/bin/sh -c 'echo 511 > /sys/class/gpio/export'"
+SUBSYSTEM=="gpio", KERNEL=="gpio511",     ACTION=="add", PROGRAM="/bin/sh -c 'echo high > /sys%p/direction'"
+
+
+SUBSYSTEM=="input", KERNEL=="event[0-9]*", ATTRS{name}=="gpio_keys", SYMLINK+="input/lcd_sandwich_buttons",\
+    TAG+="systemd", ENV{SYSTEMD_WANTS}="input-event-daemon.service"
+
+
+ACTION!="add|change", GOTO="touchscreen_end"
+
+# Try to create one touchscreen device for both version of LCD sandwich
+SUBSYSTEM=="input", KERNEL=="event[0-9]*", ENV{ID_INPUT_TOUCHSCREEN}=="1", ATTRS{name}=="edt-ft53*", \
+    SYMLINK+="input/lcd_sandwich_touchscreen input/touchscreen_edt", \
+    TAG+="systemd", \
+    OPTIONS+="link_priority=100"
+
+SUBSYSTEM=="input", KERNEL=="event[0-9]*", ENV{ID_INPUT_TOUCHSCREEN}=="1", ATTRS{name}=="ti-tsc", \
+    SYMLINK+="input/lcd_sandwich_touchscreen input/touchscreen_tsc", \
+    TAG+="systemd", \
+    OPTIONS+="link_priority=0"
+
+LABEL="touchscreen_end"
+
+

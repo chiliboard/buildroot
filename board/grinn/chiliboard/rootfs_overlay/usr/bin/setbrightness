@@ -1,0 +1,6 @@
+#!/bin/sh -eu
+
+BACKLIGHT_DIR="/sys/class/backlight/tps65217-bl"
+MAX_BRIGHTNESS=`cat ${BACKLIGHT_DIR}/max_brightness`
+
+echo $1 > ${BACKLIGHT_DIR}/brightness
