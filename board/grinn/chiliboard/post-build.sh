@@ -3,8 +3,14 @@
 
 cp board/grinn/chiliboard/uEnv.txt ${BINARIES_DIR}/uEnv.txt
 cp board/grinn/chiliboard/mkcard.sh ${BINARIES_DIR}/mkcard.sh
+CURRENT_DTB=`grep BR2_LINUX_KERNEL_INTREE_DTS_NAME ${BR2_CONFIG} | sed -n 's/.*="\(.*\)".*/\1/p'`
 
-install -m 0644 -D ${BINARIES_DIR}/*.dtb ${TARGET_DIR}/boot/am335x-chiliboard.dtb
+cat /home/niziak/chili/BUILDS/br-github-2015.02-minimal/.config | grep BR2_LINUX_KERNEL_INTREE_DTS_NAME | eval && echo $BR2_LINUX_KERNEL_INTREE_DTS_NAME
+if [ -n $CURRENT_DTB ]; then
+    install -m 0644 -D ${BINARIES_DIR}/${CURRENT_DTB}.dtb ${TARGET_DIR}/boot/am335x-chiliboard.dtb
+else
+    install -m 0644 -D ${BINARIES_DIR}/*.dtb ${TARGET_DIR}/boot/am335x-chiliboard.dtb
+fi
 
 install -m 0644 -D board/grinn/chiliboard/firmware/am335x-pm-firmware.elf ${TARGET_DIR}/lib/firmware/am335x-pm-firmware.elf
 install -m 0644 -D board/grinn/chiliboard/firmware/am335x-bone-scale-data.bin ${TARGET_DIR}/lib/firmware/am335x-bone-scale-data.bin

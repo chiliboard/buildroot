@@ -1,11 +1,4 @@
-#! /bin/bash
-# mkcard.sh v0.5
-# (c) Copyright 2009 Graeme Gregory <dp@xora.org.uk>
-# Licensed under terms of GPLv2
-#
-# Parts of the procudure base on the work of Denys Dmytriyenko
-# http://wiki.omap.com/index.php/MMC_Boot_Format
-
+#! /bin/bash -u
 export LC_ALL=C
 
 if [ $# -ne 1 ]; then
@@ -13,67 +6,42 @@ if [ $# -ne 1 ]; then
 	exit 1;
 fi
 
-DRIVE=$1
+IMAGE=sdcard.img
+DEVICE=$1
+BS=128k
 
-dd if=/dev/zero of=$DRIVE bs=1024 count=1024
-
-SIZE=`fdisk -l $DRIVE | grep Disk | grep bytes | awk '{print $5}'`
-
-echo DISK SIZE - $SIZE bytes
-
-CYLINDERS=`echo $SIZE/255/63/512 | bc`
-
-echo CYLINDERS - $CYLINDERS
-
-{
-echo ,9,0x0C,*
-echo ,,,-
-} | sfdisk -D -H 255 -S 63 -C $CYLINDERS $DRIVE
-
-sleep 1
+ERROR() {
+    echo "[EE] $1"
+    exit 1
+}
 
 
-if [ -x `which kpartx` ]; then
-	kpartx -a ${DRIVE}
-fi
+rerun_as_root() {
+    if [ "$(whoami)" != "root" ]; then
+        exec sudo -- "$0" "$@"
+        exit $?
+    fi
+}
 
-# handle various device names.
-# note something like fdisk -l /dev/loop0 | egrep -E '^/dev' | cut -d' ' -f1 
-# won't work due to https://bugzilla.redhat.com/show_bug.cgi?id=649572
+rerun_as_root $@
 
-PARTITION1=${DRIVE}1
-if [ ! -b ${PARTITION1} ]; then
-	PARTITION1=${DRIVE}p1
-fi
+if [ "$EUID" -ne 0 ]; then
+    ERROR "Please run this script as root: 'sudo $0'"
+fi  
 
-DRIVE_NAME=`basename $DRIVE`
-DEV_DIR=`dirname $DRIVE`
+[ ! -b ${DEVICE} ] && ERROR "Device ${DEVICE} is not block device!"
+[ ! -w ${DEVICE} ] && ERROR "Cannot write to ${DEVICE}!"
 
-if [ ! -b ${PARTITION1} ]; then
-	PARTITION1=$DEV_DIR/mapper/${DRIVE_NAME}p1
-fi
+grep -q ${DEVICE} /proc/mounts && ERROR "Loop '${DEVICE}' is already mounted. Please unmount it."
 
-PARTITION2=${DRIVE}2
-if [ ! -b ${PARTITION2} ]; then
-	PARTITION2=${DRIVE}p2
-fi
-if [ ! -b ${PARTITION2} ]; then
-	PARTITION2=$DEV_DIR/mapper/${DRIVE_NAME}p2
-fi
-
-
-# now make partitions.
-if [ -b ${PARTITION1} ]; then
-	umount ${PARTITION1}
-	mkfs.vfat -F 32 -n "boot" ${PARTITION1}
+command -v pv &>/dev/zero
+if [ $? -eq 0 ]; then
+    CAT=pv
 else
-	echo "Cant find boot partition in /dev"
+    echo "To see progress bar, please install 'pv' utility"
+    CAT=cat
 fi
 
-if [ -b ${PARITION2} ]; then
-	umount ${PARTITION2}
-	mke2fs -j -L "rootfs" ${PARTITION2} 
-else
-	echo "Cant find rootfs partition in /dev"
-fi
+
+$CAT ${IMAGE} | dd of=${DEVICE} bs=${BS} oflag=dsync conv=fsync
 
