@@ -1,0 +1,349 @@
+From 60367f4c76b6ef68d208b93f354f2e753cd444d9 Mon Sep 17 00:00:00 2001
+From: Wojciech Nizinski <w.nizinski@grinn-global.com>
+Date: Thu, 7 Apr 2016 14:02:03 +0200
+Subject: [PATCH 2/2] chiliboard-lcd: audio, gpio keys and FT5316 touchscreen
+
+enable I2C FT5316 touchscreen controller
+use gpio 1_22 as ft5316 INT
+
+use MCP23008 as GPIO controller and interrupt controller
+use gpio 1_23 as I2C INT from MCP23008 expander
+use gpio-keys module to handle LCD sandwich buttons
+---
+ .../boot/dts/am335x-chiliboard-all-gpio-lcd.dtsi   |   2 -
+ arch/arm/boot/dts/am335x-chiliboard-common.dtsi    |  17 +-
+ arch/arm/boot/dts/am335x-chiliboard-lcd-cape.dtsi  | 245 ++++++++++++++++++++-
+ 3 files changed, 257 insertions(+), 7 deletions(-)
+
+diff --git a/arch/arm/boot/dts/am335x-chiliboard-all-gpio-lcd.dtsi b/arch/arm/boot/dts/am335x-chiliboard-all-gpio-lcd.dtsi
+index 1126528..709a72d 100644
+--- a/arch/arm/boot/dts/am335x-chiliboard-all-gpio-lcd.dtsi
++++ b/arch/arm/boot/dts/am335x-chiliboard-all-gpio-lcd.dtsi
+@@ -44,8 +44,6 @@
+ 			0x06c (PIN_INPUT | MUX_MODE7) /* "gpmc_a11.gpio1_27" */
+ 			0x060 (PIN_INPUT | MUX_MODE7) /* "gpmc_a8.gpio1_24" */
+ 			0x064 (PIN_INPUT | MUX_MODE7) /* "gpmc_a9.gpio1_25" */
+-			0x058 (PIN_INPUT | MUX_MODE7) /* "gpmc_a6.gpio1_22" */
+-			0x05c (PIN_INPUT | MUX_MODE7) /* "gpmc_a7.gpio1_23" */
+ 			0x050 (PIN_INPUT | MUX_MODE7) /* "gpmc_a4.gpio1_20" */
+ 			0x054 (PIN_INPUT | MUX_MODE7) /* "gpmc_a5.gpio1_21" */
+ 			0x048 (PIN_INPUT | MUX_MODE7) /* "gpmc_a2.gpio1_18" */
+diff --git a/arch/arm/boot/dts/am335x-chiliboard-common.dtsi b/arch/arm/boot/dts/am335x-chiliboard-common.dtsi
+index 5c8d86b..755d84b 100644
+--- a/arch/arm/boot/dts/am335x-chiliboard-common.dtsi
++++ b/arch/arm/boot/dts/am335x-chiliboard-common.dtsi
+@@ -28,6 +28,7 @@
+ 		led@1 {
+ 			label = "led1";
+ 			gpios = <&gpio3 8 GPIO_ACTIVE_LOW>;
++			linux,default-trigger = "mmc0";
+ 			default-state = "off";
+ 		};
+ 	};
+@@ -90,6 +91,18 @@
+ 		>;
+ 	};
+ 
++	mmc1_pins_sleep: pinmux_mmc1_pins_sleep {
++		pinctrl-single,pins = <
++			0x0F0 (PIN_INPUT_PULLDOWN | MUX_MODE7)	/* mmc0_dat3.mmc0_dat3 */
++			0x0F4 (PIN_INPUT_PULLDOWN | MUX_MODE7)	/* mmc0_dat2.mmc0_dat2 */
++			0x0F8 (PIN_INPUT_PULLDOWN | MUX_MODE7)	/* mmc0_dat1.mmc0_dat1 */
++			0x0FC (PIN_INPUT_PULLDOWN | MUX_MODE7)	/* mmc0_dat0.mmc0_dat0 */
++			0x100 (PIN_INPUT_PULLDOWN | MUX_MODE7)	/* mmc0_clk.mmc0_clk */
++			0x104 (PIN_INPUT_PULLDOWN | MUX_MODE7)	/* mmc0_cmd.mmc0_cmd */
++			0x160 (PIN_INPUT_PULLDOWN | MUX_MODE7)	/* spi0_cs1.gpio0_6 */
++		>;
++	};
++
+ 	user_leds_default: user_leds_default {
+ 		pinctrl-single,pins = <
+ 			0x1e4 (PIN_OUTPUT | MUX_MODE7)	/* emu0.gpio3_7 */
+@@ -153,9 +166,9 @@
+ 	status = "okay";
+ 	vmmc-supply = <&ldo4_reg>;
+ 	bus-width = <4>;
+-	pinctrl-names = "default";
++	pinctrl-names = "default", "sleep";
+ 	pinctrl-0 = <&mmc1_pins_default>;
+-	/* cd-gpios = <&gpio0 6 GPIO_ACTIVE_HIGH>; */
++	pinctrl-1 = <&mmc1_pins_sleep>;
+ 	/* cd-inverted; */
+ };
+ 
+diff --git a/arch/arm/boot/dts/am335x-chiliboard-lcd-cape.dtsi b/arch/arm/boot/dts/am335x-chiliboard-lcd-cape.dtsi
+index 9e99ab1..860570b 100644
+--- a/arch/arm/boot/dts/am335x-chiliboard-lcd-cape.dtsi
++++ b/arch/arm/boot/dts/am335x-chiliboard-lcd-cape.dtsi
+@@ -124,6 +124,7 @@
+ 		ti,x-plate-resistance = <200>;
+ 		ti,coordinate-readouts = <5>;
+ 		ti,wire-config = <0x00 0x11 0x22 0x33>;
++		ti,charge-delay = <0x400>;
+ 	};
+ 
+ 	adc {
+@@ -132,19 +133,257 @@
+ };
+ 
+ &tps {
+-	backlight {
++	backlight: backlight {
+ 		fdim = <100>; /* 100Hz,200Hz,500Hz,1000Hz */
+ 		isel = <1>; /* 1 - ISET1, 2 - ISET 2 */
+ 		default-brightness = <50>;
+ 	};
+ };
+ 
++/* --------------------------------------------------------------------- */
++/* LCD Sanwich with FDT touch screen controller. Controller INT connected to GPIO1_22 */
++&am33xx_pinmux {
++    ft5316_int_pins_default: ft5316_int_pins_default {
++	pinctrl-single,pins = <
++	    0x058 (PIN_INPUT | MUX_MODE7)         /* "gpmc_a6.gpio1_22" / LCD Sandwich FDT INT */
++	>;
++    };
++
++    ft5316_int_pins_sleep: ft5316_int_pins_sleep {
++	pinctrl-single,pins = <
++	    0x058 (PIN_INPUT_PULLDOWN | MUX_MODE7) /* "gpmc_a6.gpio1_22" / LCD Sandwich FDT INT */
++	>;
++    };
++};
++
++#include <dt-bindings/interrupt-controller/irq.h>
++&i2c0 {
++        polytouch: edt-ft5316@38 {
++                status = "okay";
++                compatible = "edt,edt-ft5306", "edt,edt-ft5x06";
++
++                pinctrl-names = "default", "sleep";
++                pinctrl-0 = <&ft5316_int_pins_default>;
++                pinctrl-1 = <&ft5316_int_pins_sleep>;
++
++                reg = <0x38>;
++
++                interrupt-parent = <&gpio1>;
++                interrupts = <22 IRQ_TYPE_EDGE_FALLING>;
++
++                //reset-gpios = <0>;
++                wake-gpios  = <&mcpgpio 5 GPIO_ACTIVE_HIGH>;
++
++                touchscreen-size-x = <800>;
++                touchscreen-size-y = <480>;
++        };
++};
++
++/* --------------------------------------------------------------------- */
++/* MCP23008 connected to I2C SCL and SDA and to interrupt line:
++   GPIO1_23
++*/
++&am33xx_pinmux {
++    i2c_int_pins_default: i2c_int_pins_default {
++	pinctrl-single,pins = <
++	    0x05c (PIN_INPUT_PULLUP | MUX_MODE7) /* "gpmc_a7.gpio1_23" / LCD Sandwich I2C INT */
++	>;
++    };
++
++    i2c_int_pins_sleep: i2c_int_pins_sleep {
++	pinctrl-single,pins = <
++	    0x05c (PIN_INPUT_PULLDOWN | MUX_MODE7) /* "gpmc_a7.gpio1_23" / LCD Sandwich I2C INT */
++	>;
++    };
++};
++
+ &i2c0 {
+  	mcpgpio: gpio@20 {
+ 		compatible = "microchip,mcp23008";
+ 		gpio-controller;
+ 		#gpio-cells = <2>;
+- 		reg = <0x20>;
+- 	};
++		reg = <0x20>;
++		status = "okay";
++
++		pinctrl-names = "default", "sleep";
++		pinctrl-0 = <&i2c_int_pins_default>;
++		pinctrl-1 = <&i2c_int_pins_sleep>;
++
++		/* INT connected to Chiliboard P62=GPIO1_23 */
++		interrupt-parent = <&gpio1>;
++		interrupts = <23 IRQ_TYPE_LEVEL_LOW>;
++		interrupt-controller;
++	};
++};
++
++#include <dt-bindings/input/input.h>
++/ {
++    gpio_keys {
++	compatible = "gpio-keys";
++	#address-cells = <1>;
++	#size-cells = <0>;
++	autorepeat;
++	button@0 {  label = "S1";
++                    gpios = <&mcpgpio 0 GPIO_ACTIVE_LOW>;
++                    linux,code = <BTN_1>;
++                    gpio-key,wakeup;
++                 };
++
++        button@1 {  label = "S2";
++		    gpios = <&mcpgpio 1 GPIO_ACTIVE_LOW>;
++		    linux,code = <BTN_2>;
++                    gpio-key,wakeup;
++		 };
++
++        button@2 {  label = "S3";
++                    gpios = <&mcpgpio 2 GPIO_ACTIVE_LOW>;
++                    linux,code = <BTN_3>;
++                    gpio-key,wakeup;
++                 };
++
++        button@3 {  label = "S4";
++                    gpios = <&mcpgpio 3 GPIO_ACTIVE_LOW>;
++                    linux,code = <BTN_4>;
++                    gpio-key,wakeup;
++                 };
++
++        button@4 {  label = "S5";
++                    gpios = <&mcpgpio 4 GPIO_ACTIVE_LOW>;
++                    linux,code = <BTN_5>;
++                    gpio-key,wakeup;
++                 };
++    };
++};
++
++
++/* --------------------------------------------------------------------- */
++/* TLV320AIC3204 connected to:
++    - I2C lines SCL, SDA
++    - Codec <-> MCU
++    - MCLK  <-- O P5 GPIO3_21 	MCASP0_AHCLKX in MUX0 (Transmit high-frequency master clock)
++    - BCLK  --> O P4 GPIO3_14 	MCASP0_ACLKX  in MUX0 (Transmit bit clock)
++    - WCLK  --> O P3 GPIO3_15 	MCASP0_FSX    in MUX0 (Transmit frame sync or left/right clock (LRCLK))
++    - DIN   <-- O P1 GPIO3_16 	MCASP0_AXR0   in MUX0 (Audio transmit - serializer 0)
++    - DOUT  --> I P2 GPIO3_20 	MCASP0_AXR1   in MUX0 (Audio receive  - serializer 1)
++    mcasp0 used as "Transmit clock & sync with 2 serializers with ahclkx"
++*/
++&am33xx_pinmux {
++        mcasp0_pins: mcasp0_pins {
++                pinctrl-single,pins = <
++                    0x1ac ( PIN_OUTPUT_PULLDOWN| MUX_MODE0 ) /* (A14) mcasp0_ahclkx.mcasp0_ahclkx */
++                    0x190 ( PIN_INPUT_PULLDOWN | MUX_MODE0 ) /* (A13) mcasp0_aclkx.mcasp0_aclkx */
++                    0x194 ( PIN_INPUT_PULLDOWN | MUX_MODE0 ) /* (B13) mcasp0_fsx.mcasp0_fsx */
++                    0x198 ( PIN_OUTPUT_PULLDOWN| MUX_MODE0 ) /* (D12) mcasp0_axr0.mcasp0_axr0 */
++                    0x1a8 ( PIN_INPUT_PULLDOWN | MUX_MODE0 ) /* (D13) mcasp0_axr1.mcasp0_axr1 */
++                >;
++        };
++
++        mcasp0_pins_sleep: mcasp0_pins_sleep {
++                pinctrl-single,pins = <
++                    0x1ac ( PIN_INPUT_PULLDOWN | MUX_MODE7 ) /* (A14) mcasp0_ahclkx.mcasp0_ahclkx */
++                    0x190 ( PIN_INPUT_PULLDOWN | MUX_MODE7 ) /* (A13) mcasp0_aclkx.mcasp0_aclkx */
++                    0x194 ( PIN_INPUT_PULLDOWN | MUX_MODE7 ) /* (B13) mcasp0_fsx.mcasp0_fsx */
++                    0x198 ( PIN_INPUT_PULLDOWN | MUX_MODE7 ) /* (D12) mcasp0_axr0.mcasp0_axr0 */
++                    0x1a8 ( PIN_INPUT_PULLDOWN | MUX_MODE7 ) /* (D13) mcasp0_axr1.mcasp0_axr1 */
++                >;
++        };
++};
++
++
++/ {
++	clk_mcasp0_fixed: clk_mcasp0_fixed {
++		#clock-cells = <0>;
++		compatible = "fixed-clock";
++		clock-frequency = <24000000>;
++	};
++
++	clk_mcasp0_mclk: mcasp0_mclk {
++		#clock-cells = <0>;
++		compatible = "fixed-factor-clock";
++		clocks = <&sys_clkin_ck>;
++		clock-mult = <1>;
++		clock-div = <1>;
++	};
++};
++
++#include <dt-bindings/sound/tlv320aic31xx-micbias.h>
++&i2c0 {
++    tlv320aic32x4: tlv320aic32x4@18 {
++	compatible = "ti,tlv320aic32x4";
++	reg = <0x18>;
++	#sound-dai-cells = <0>;
++
++	clocks = <&clk_mcasp0_fixed>;
++	clock-names = "mclk";
++
++        iov-supply   = <&ldo2_reg>;
++        ldoin-supply = <&ldo2_reg>;
++        dv-supply    = <&ldo2_reg>;
++        av-supply    = <&ldo2_reg>;
++
++	status = "okay";
++    };
++};
++
++
++&mcasp0 {
++        pinctrl-names = "default", "sleep";
++        pinctrl-0 = <&mcasp0_pins>;
++        pinctrl-1 = <&mcasp0_pins_sleep>;
++        status = "okay";
++        #sound-dai-cells = <0>;
++        op-mode = <0>;    /* MCASP_IIS_MODE */
++        tdm-slots = <2>;  /* 2 slots per frame for IIS mode */
++             /* Chip supports 10 serializers, but only 4 are pinned out. */
++             /* use serializer 0 as TX and 1 as RX, 3 & 4 are not used */
++             /*    - TLV320 DIN  <-- MCASP0_AXR0 */
++             /*    - TLV320 DOUT --> MCASP0_AXR1 */
++
++        serial-dir = <  /* 0: INACTIVE, 1: TX, 2: RX */
++                        1 2 0 0
++                >;
++        tx-num-evt = <1>;	/* FIFO levels */
++        rx-num-evt = <1>;
++        /*  fck_parent= */
++};
++
++/ {
++    sound {
++	compatible = "simple-audio-card";
++	simple-audio-card,name = "chiliboard";
++	simple-audio-card,format = "dsp_b";
++
++	/* SND_SOC_DAIFMT_CBM_CFM  codec clk & FRM master */
++	simple-audio-card,bitclock-master = <&link0_codec>;
++	simple-audio-card,frame-master    = <&link0_codec>;
++
++	clocks = <&clk_mcasp0_fixed>;
++	clock-names = "mclk";
++
++	simple-audio-card,widgets =
++	    /* "widget" <--> "user label" */
++	    "Microphone", "Microphone Jack",
++	    "Headphone", "Headphone Jack";
++
++	simple-audio-card,routing =
++	    /* TO <== FROM */
++	    "Mic Bias", "Microphone Jack",
++	    "IN3_L", "Mic Bias",
++	    "IN3_R", "Mic Bias",
++
++	    "Headphone Jack", "HPL",
++	    "Headphone Jack", "HPR";
++
++	link0_cpu: simple-audio-card,cpu {
++	    sound-dai = <&mcasp0>;
++	    system-clock-frequency = <24000000>;
++	    system-clock-direction = "out";
++	};
++
++	link0_codec: simple-audio-card,codec {
++	    sound-dai = <&tlv320aic32x4>;
++	    system-clock-frequency = <24000000>;
++	};
++    };
+ };
+ 
+-- 
+2.1.4
+

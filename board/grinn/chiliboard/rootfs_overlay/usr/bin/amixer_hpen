@@ -1,0 +1,5 @@
+#!/bin/sh -eu
+amixer set 'HP DAC',0 on
+amixer set 'HPL Output Mixer L_DAC',0 on
+amixer set 'HPR Output Mixer R_DAC',0 on
+

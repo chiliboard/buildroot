@@ -1,0 +1,5 @@
+config BR2_PACKAGE_ALSACAP
+	bool "alsacap"
+	depends on BR2_PACKAGE_ALSA_LIB
+	help 
+	    Alsa capability tool displays the capabilities of your sound card and its ALSA driver.

@@ -65,4 +65,21 @@ define ALSA_UTILS_INSTALL_TARGET_CMDS
 	fi
 endef
 
+define ALSA_UTILS_INSTALL_INIT_SYSTEMD
+# Will create dirs  '/target/lib/udev/rules.d' '/target/lib/systemd/system'
+#/usr/bin/install -c -m 644 90-alsa-restore.rules '/target/lib/udev/rules.d'
+#/usr/bin/install -c -m 644 alsa-state.service alsa-restore.service alsa-store.service '/target/lib/systemd/system'
+        $(TARGET_MAKE_ENV) $(MAKE) -C $(@D)/alsactl DESTDIR=$(TARGET_DIR) install-udevrulesDATA install-systemdsystemunitDATA
+        mkdir -p -m 0755 \
+                $(TARGET_DIR)/lib/systemd/system/basic.target.wants \
+                $(TARGET_DIR)/lib/systemd/system/shutdown.target.wants
+        ( cd $(TARGET_DIR)/lib/systemd/system/basic.target.wants && \
+                rm -f alsa-state.service alsa-restore.service && \
+                ln -s ../alsa-state.service alsa-state.service && \
+                ln -s ../alsa-restore.service alsa-restore.service)
+        ( cd $(TARGET_DIR)/lib/systemd/system/shutdown.target.wants && \
+        rm -f alsa-store.service && \
+                ln -s ../alsa-store.service alsa-store.service )
+endef
+
 $(eval $(autotools-package))

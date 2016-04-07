@@ -1,0 +1,5 @@
+#!/bin/sh -eu
+amixer set 'LO DAC',0 on
+amixer set 'LOL Output Mixer L_DAC',0 on
+amixer set 'LOR Output Mixer R_DAC',0 on
+
